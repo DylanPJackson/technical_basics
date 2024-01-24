@@ -82,5 +82,24 @@ class TestLinkedList(unittest.TestCase):
         str_check_4 = ''
         self.assertEqual(str(self.ll), str_check_4)
 
+    @unittest.expectedFailure
+    def test_delete_empty(self):
+        self.ll.delete_val(self.test_val_1)
+
+    @unittest.expectedFailure
+    def test_delete_noExist(self):
+        self.ll.insert(self.test_val_1)
+        self.ll.delete_val(self.test_val_2)
+
+    def test_delete_val(self):
+        self.ll.insert(self.test_val_1)
+        self.ll.insert(self.test_val_2)
+        str_check_1 = 'Head -> {val_1} -> {val_2}'.format(val_1=self.test_val_1, val_2=self.test_val_2)
+        self.assertEqual(str_check_1, str(self.ll))
+        self.ll.delete_val(self.test_val_1)
+        str_check_2 = 'Head -> {val_2}'.format(val_2=self.test_val_2)
+        self.assertEqual(str_check_2, str(self.ll))
+
+
 if __name__ == '__main__':
     unittest.main()
