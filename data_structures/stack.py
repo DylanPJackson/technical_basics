@@ -20,7 +20,7 @@ class Stack:
         if self.top.head is None:
             return ''
         else:
-            return 'Top' + str(self.top)
+            return 'Top -> ' + str(self.top)
 
     def push(self, value):
         """

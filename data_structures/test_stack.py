@@ -50,3 +50,7 @@ class TestStack(unittest.TestCase):
         self.assertEqual(val, self.test_val_2)
         str_check_2 = 'Top -> {val_3}'.format(val_3=self.test_val_3)
         self.assertEqual(str_check_2, str(self.stack))
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -21,7 +21,13 @@ class SimpleNode:
         self.root = root
 
     def __str__(self):
-        if self.root is True:
-            return ''
+        if self.root:
+            if self.head is None:
+                return ''
+            else:
+                return str(self.head)
         else:
-            return ' -> {value}'.format(value=str(self.value)) + str(self.head)
+            if self.head is not None and not self.head.root:
+                return '{value} -> '.format(value=str(self.value)) + str(self.head)
+            else:
+                return str(self.value)
