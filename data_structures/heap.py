@@ -13,7 +13,7 @@ class Heap:
     ----------
     @size: int
         size of heap
-    is_empty: boolean
+    @is_empty: boolean
         Returns whether heap is empty or not
     kind: HeapType
         Indication of what kind of heap, max or min
@@ -37,17 +37,22 @@ class Heap:
     Heapify : Create heap out of given array of elements
     Merge : Merge two heaps into one
     """
-    def __init__(self):
-        self.is_empty = True
-        self.kind = None
+    def __init__(self, kind: HeapType = None):
+        self.kind = kind
         self._heap_arr = []
 
     @property
     def size(self):
         return len(self._heap_arr)
 
+    @property
+    def is_empty(self):
+        if self.size == 0:
+            return True
+        else:
+            return False
+
     def empty(self):
-        self.is_empty = True
         self._heap_arr = []
 
     def _satisfied(self, child_node: int, par_node: int) -> bool:
@@ -57,13 +62,15 @@ class Heap:
         :param par_node: int, parent node 
         :return: bool
         """
+        if child_node is None:
+            return True
         if self.kind == HeapType.MIN:
-            if par_node < child_node:
+            if par_node <= child_node:
                 return True
             else:
                 return False
         elif self.kind == HeapType.MAX:
-            if par_node > child_node:
+            if par_node >= child_node:
                 return True
             else:
                 return False
@@ -108,15 +115,50 @@ class Heap:
                 child_1_ind = (2 * par_ind) + 1
                 child_2_ind = (2 * par_ind) + 2
                 par_node = self._heap_arr[par_ind]
-                if child_1_ind < self.size - 1:
+                if child_1_ind < self.size:
                     child_1_node = self._heap_arr[child_1_ind]
                 else:
-                    child_1_node = 0
+                    child_1_node = None
 
-                if child_2_ind < self.size - 1:
+                if child_2_ind < self.size:
                     child_2_node = self._heap_arr[child_2_ind]
                 else:
-                    child_2_node = 0
+                    child_2_node = None
+                if self._satisfied(child_1_node, par_node) and self._satisfied(child_2_node, par_node):
+                    # If satisfied with both children, break
+                    break
+                elif self._satisfied(child_1_node, par_node):
+                    # If satisfied with only child 1, swap with child 2
+                    self._heap_arr[child_2_ind] = par_node
+                    self._heap_arr[par_ind] = child_2_node
+                    par_ind = child_2_ind
+                elif self._satisfied(child_2_node, par_node):
+                    # If satisfied with only child 2, swap with child 1
+                    self._heap_arr[child_1_ind] = par_node
+                    self._heap_arr[par_ind] = child_1_node
+                    par_ind = child_1_ind
+                else:
+                    # If not satisfied with either, swap with appropriate child
+                    if self.kind == HeapType.MAX:
+                        if child_1_node > child_2_node:
+                            self._heap_arr[child_1_ind] = par_node
+                            self._heap_arr[par_ind] = child_1_node
+                            par_ind = child_1_ind
+                        else:
+                            self._heap_arr[child_2_ind] = par_node
+                            self._heap_arr[par_ind] = child_2_node
+                            par_ind = child_2_ind
+                    elif self.kind == HeapType.MIN:
+                        if child_1_node < child_2_node:
+                            self._heap_arr[child_1_ind] = par_node
+                            self._heap_arr[par_ind] = child_1_node
+                            par_ind = child_1_ind
+                        else:
+                            self._heap_arr[child_2_ind] = par_node
+                            self._heap_arr[par_ind] = child_2_node
+                            par_ind = child_2_ind
+                    else:
+                        raise Exception("Heap type: {kind} not support".format(kind=self.kind))
 
     def peek(self):
         """
@@ -135,8 +177,6 @@ class Heap:
         :return: None
         """
         self._heap_arr.append(node)
-        if self.is_empty:
-            self.is_empty = False
         self._sift_up()
 
     def pop(self):
@@ -149,12 +189,9 @@ class Heap:
         if self.is_empty:
             raise Exception("Can not pop, heap is empty")
         else:
-            new_root = self._heap_arr.pop()
             old_root = self._heap_arr[0]
-            if len(self._heap_arr) == 0:
-                self.is_empty = True
-            else:
+            new_root = self._heap_arr.pop()
+            if not self.is_empty:
                 self._heap_arr[0] = new_root
                 self._sift_down()
             return old_root
-
