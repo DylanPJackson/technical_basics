@@ -59,6 +59,30 @@ class TestBST(unittest.TestCase):
             search_result = self.bst.search(search_key)
             self.assertEqual(search_result, search_key)
 
+    @unittest.expectedFailure
+    def test_delete_empty(self):
+        self.bst.delete(self.arr_1[0])
+
+    def test_delete(self):
+        # Delete root node with no children
+        self.bst.insert(self.arr_1[0])
+        self.bst.delete(self.arr_1[0])
+        self.assertEqual("", self.bst.traverse())
+
+        # Delete leaf node right side, not root
+        self.bst.empty()
+        self.bst.insert(self.arr_1[0])
+        self.bst.insert(self.arr_1[1])
+        self.bst.delete(self.arr_1[1])
+        self.assertEqual(" 8 ", self.bst.traverse())
+
+        # Delete leaf left side, not root
+        self.bst.empty()
+        self.bst.insert(self.arr_1[0])
+        self.bst.insert(self.arr_1[2])
+        self.bst.delete(self.arr_1[2])
+        self.assertEqual(" 8 ", self.bst.traverse())
+
 
 if __name__ == "__main__":
     unittest.main()

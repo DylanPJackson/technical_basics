@@ -132,7 +132,7 @@ class BST:
                     else:
                         curr_key = self.neighbors[curr_key][2]
 
-    def traverse(self, order: str):
+    def traverse(self, order: str = 'in'):
         """
         Return a string representation of the tree in the given traverse order
         :param order: str, [pre, post, in]
@@ -147,7 +147,6 @@ class BST:
         :param key: key to remove
         :return: None
         """
-        # Case 1 : No children
         if self.is_empty:
             raise Exception("Cannot delete from empty tree")
         else:
@@ -155,9 +154,35 @@ class BST:
                 left_c = self._get_nbr(key, 'child', 'left')
                 right_c = self._get_nbr(key, 'child', 'right')
                 parent = self._get_nbr(key, 'parent')
+                # Case 1 : No children
                 if left_c is None and right_c is None:
                     if parent is not None:
-                        pass
+                        if self.neighbors[parent][1] == key:
+                            self.neighbors[parent][1] = None
+                        elif self.neighbors[parent][2] == key:
+                            self.neighbors[parent][2] = None
+                        else:
+                            raise Exception("Issue deleting key: {key} from parent: {parent}".format(key=key,
+                                                                                                     parent=parent))
+                    else:
+                        self.root = None
+                    del self.neighbors[key]
+                # Case 2 : One child
+                elif left_c is None or right_c is None:
+                    if left_c is None:
+                        child = right_c
+                    else:
+                        child = left_c
+                    if parent is not None:
+                        if self.neighbors[parent][1] == key:
+                            self.neighbors[parent][1] = child
+                        elif self.neighbors[parent][2] == key:
+                            self.neighbors[parent][2] = child
+                        else:
+                            raise Exception("Issue deleting key: {key} from parent: {parent}".format(key=key,
+                                                                                                     parent=parent))
+                    else:
+                        self.root = child
             else:
                 raise Exception("Cannot delete key: {key} as it does not exist in bst")
         # Case 2 : One child
