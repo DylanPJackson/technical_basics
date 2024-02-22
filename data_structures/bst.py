@@ -84,6 +84,20 @@ class BST:
             else:
                 raise Exception("Can not perform traverse with order : {order}".format(order=order))
 
+    def _find_replacement(self, key: int):
+        """
+        Helper function to find replacement key for given key.
+
+        Finds in order successor. In other words, first node in right subtree that does not have left child.
+        :param key: key to find replacement for
+        :return: replacement, int
+        """
+        left_c = self._get_nbr(key, 'child', 'left')
+        if left_c is None:
+            return key
+        else:
+            return self._find_replacement(left_c)
+
     def search(self, search_key: int):
         """
         Return search_key if exists, otherwise none
@@ -106,7 +120,7 @@ class BST:
 
     def insert(self, ins_key: int):
         """
-        Add key to BST
+        Add key to BST. Forbids duplicates.
 
         :param ins_key: key to insert
         :return: None
@@ -115,22 +129,26 @@ class BST:
             self.root = ins_key
             self.neighbors[ins_key] = [None, None, None]
         else:
-            curr_key = self.root
-            while curr_key is not None:
-                if ins_key <= curr_key:
-                    if self.neighbors[curr_key][1] is None:
-                        self.neighbors[curr_key][1] = ins_key
-                        self.neighbors[ins_key] = [curr_key, None, None]
-                        break
+            if ins_key in self.neighbors.keys():
+                raise Exception("This binary tree does not support duplicates. Can not insert key : {key}".format(
+                    key=ins_key))
+            else:
+                curr_key = self.root
+                while curr_key is not None:
+                    if ins_key <= curr_key:
+                        if self.neighbors[curr_key][1] is None:
+                            self.neighbors[curr_key][1] = ins_key
+                            self.neighbors[ins_key] = [curr_key, None, None]
+                            break
+                        else:
+                            curr_key = self.neighbors[curr_key][1]
                     else:
-                        curr_key = self.neighbors[curr_key][1]
-                else:
-                    if self.neighbors[curr_key][2] is None:
-                        self.neighbors[curr_key][2] = ins_key
-                        self.neighbors[ins_key] = [curr_key, None, None]
-                        break
-                    else:
-                        curr_key = self.neighbors[curr_key][2]
+                        if self.neighbors[curr_key][2] is None:
+                            self.neighbors[curr_key][2] = ins_key
+                            self.neighbors[ins_key] = [curr_key, None, None]
+                            break
+                        else:
+                            curr_key = self.neighbors[curr_key][2]
 
     def traverse(self, order: str = 'in'):
         """
@@ -162,8 +180,8 @@ class BST:
                         elif self.neighbors[parent][2] == key:
                             self.neighbors[parent][2] = None
                         else:
-                            raise Exception("Issue deleting key: {key} from parent: {parent}".format(key=key,
-                                                                                                     parent=parent))
+                            raise Exception("Issue deleting key: {key} from parent: {parent} in BST: {tree_str}".format
+                                            (key=key, parent=parent, tree_str=self.traverse()))
                     else:
                         self.root = None
                     del self.neighbors[key]
@@ -179,11 +197,29 @@ class BST:
                         elif self.neighbors[parent][2] == key:
                             self.neighbors[parent][2] = child
                         else:
-                            raise Exception("Issue deleting key: {key} from parent: {parent}".format(key=key,
-                                                                                                     parent=parent))
+                            raise Exception("Issue deleting key: {key} from parent: {parent} in BST: {tree_str}".format
+                                            (key=key, parent=parent, tree_str=self.traverse()))
                     else:
                         self.root = child
+                    del self.neighbors[key]
+                # Case 3 : Two children
+                else:
+                    # Find replacement key
+                    replacement_key = self._find_replacement(right_c)
+                    # Delete replacement key
+                    self.delete(replacement_key)
+                    if parent is not None:
+                        if self.neighbors[parent][1] == key:
+                            self.neighbors[parent][1] = replacement_key
+                        elif self.neighbors[parent][2] == key:
+                            self.neighbors[parent][2] = replacement_key
+                        else:
+                            raise Exception("Issue deleting key: {key} from parent: {parent} in BST: {tree_str}".format
+                                            (key=key, parent=parent, tree_str=self.traverse()))
+                    else:
+                        self.root = replacement_key
+                    # Replace original key with replacement key
+                    tmp_values = self.neighbors.pop(key)
+                    self.neighbors[replacement_key] = tmp_values
             else:
                 raise Exception("Cannot delete key: {key} as it does not exist in bst")
-        # Case 2 : One child
-        # Case 3 : Two children
