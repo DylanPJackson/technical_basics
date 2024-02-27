@@ -1,13 +1,17 @@
+from graph_node import Node
+import json
+
+
 class Graph:
     """
     Implementation of a weighted directed graph
 
-    Utilizes an adjacency matrix to at once store relation and weight in one data point.
-    Sacrifices space for convenience.
+    Maintains a dictionary of connections between Nodes and their weights.
+    Allows for labeled nodes with weighted connections.
 
     Attributes
     ----------
-    adj_matrix: List[List[int]]
+    adj_map: Dict[Node: Dict[Node: int]]
     @is_empty: boolean
 
     Methods
@@ -29,11 +33,61 @@ class Graph:
     """
 
     def __init__(self):
-        self.adj_matrix = [[]]
+        self.adj_map = {}
 
     @property
     def is_empty(self):
-        if self.adj_matrix == [[]]:
+        if self.adj_map == {}:
             return True
         else:
             return False
+
+    def load_from_json(self, path: str):
+        """
+        Create graph from given json.
+
+        JSON must be in the following format
+        label: {val, {connection: weight, connection: weight...}}
+        Example :
+        {
+            'node_1' : {
+                'val': 10,
+                'connections': {
+                    'node_2': 2,
+                    'node_3': 1
+                }
+            },
+            'node_2' : {
+                'val': 20,
+                'connections': {
+                    'node_1': 4
+                }
+            }
+        }
+
+        :param path: path to read in csv
+        :return: None
+        """
+        if path:
+            if path[-4:] != 'json':
+                raise Exception("Can not read file : {}. Must be in csv format".format(path))
+            else:
+                with open(path) as f:
+                    graph_dct = json.load(f)
+                    node_dct = {}
+                    for label in list(graph_dct.keys()):
+                        node_dct[label] = graph_dct[label]['val']
+
+                    for src_label in list(graph_dct.keys()):
+                        dst_keys = list(graph_dct[src_label]['connections'].keys())
+                        if dst_keys is not []:
+                            for dst_label in dst_keys:
+                                src_node = Node(src_label, node_dct[src_label])
+                                dst_node = Node(dst_label, node_dct[dst_label])
+                                weight = graph_dct[src_label]['connections'][dst_label]
+                                self.adj_map[src_node] = {}
+                                self.adj_map[src_node][dst_node] = weight
+                        else:
+                            self.adj_map[src_node] = {}
+        else:
+            raise Exception("You must provide a path to load from json")
