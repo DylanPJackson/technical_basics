@@ -1,4 +1,3 @@
-from graph_node import Node
 import json
 
 
@@ -6,12 +5,12 @@ class Graph:
     """
     Implementation of a weighted directed graph
 
-    Maintains a dictionary of connections between Nodes and their weights.
-    Allows for labeled nodes with weighted connections.
+    Utilizes an adjacency matrix to track connection and weight, and table to track node labels.
 
     Attributes
     ----------
-    adj_map: Dict[Node: Dict[Node: int]]
+    adj_matrix: List[List[int, int]]
+    label_table: Dict[str, int]
     @is_empty: boolean
 
     Methods
@@ -33,39 +32,40 @@ class Graph:
     """
 
     def __init__(self):
-        self.adj_map = {}
+        self.adj_matrix = []
+        self.label_table = {}
 
     @property
     def is_empty(self):
-        if self.adj_map == {}:
+        if self.adj_matrix == [] and self.label_table == {}:
             return True
         else:
             return False
+
+    def __str__(self):
+        return "label_table : {}\nadj_matrix : {}".format(self.label_table, self.adj_matrix)
 
     def load_from_json(self, path: str):
         """
         Create graph from given json.
 
-        JSON must be in the following format
-        label: {val, {connection: weight, connection: weight...}}
+        JSON must be in the following format : {'labels' : Dict[str, int], 'adj_matrix': List[List[int]]}
+
         Example :
         {
-            'node_1' : {
-                'val': 10,
-                'connections': {
-                    'node_2': 2,
-                    'node_3': 1
-                }
+            'labels' : {
+                'PA': 0,
+                'NJ': 1,
+                'OH': 2
             },
-            'node_2' : {
-                'val': 20,
-                'connections': {
-                    'node_1': 4
-                }
+            'adj_matrix' : {
+                [-1, 4, 3],
+                [2, -1, -1],
+                [-1, -1, -1]
             }
         }
 
-        :param path: path to read in csv
+        :param path: path to read in JSON
         :return: None
         """
         if path:
@@ -74,20 +74,51 @@ class Graph:
             else:
                 with open(path) as f:
                     graph_dct = json.load(f)
-                    node_dct = {}
-                    for label in list(graph_dct.keys()):
-                        node_dct[label] = graph_dct[label]['val']
-
-                    for src_label in list(graph_dct.keys()):
-                        dst_keys = list(graph_dct[src_label]['connections'].keys())
-                        if dst_keys is not []:
-                            for dst_label in dst_keys:
-                                src_node = Node(src_label, node_dct[src_label])
-                                dst_node = Node(dst_label, node_dct[dst_label])
-                                weight = graph_dct[src_label]['connections'][dst_label]
-                                self.adj_map[src_node] = {}
-                                self.adj_map[src_node][dst_node] = weight
-                        else:
-                            self.adj_map[src_node] = {}
+                    self.label_table = graph_dct['labels']
+                    self.adj_matrix = graph_dct['adj_matrix']
+                    for label in list(self.label_table.keys()):
+                        reverse_key = self.label_table[label]
+                        self.label_table[reverse_key] = label
         else:
             raise Exception("You must provide a path to load from json")
+
+    def check_adjacency(self, label_x: str, label_y: str):
+        """
+        Check if there is adjacency between two nodes with given labels
+
+        Direction is accounted for, with label_x pointing to label_y.
+
+        :param label_x: the label of first node
+        :param label_y: label of second node
+        :return: boolean
+        """
+        if label_x not in self.label_table and label_y not in self.label_table:
+            raise Exception("Error checking adjacency between {} and {} as neither exist in graph".format(
+                label_x, label_y))
+        if label_x not in self.label_table:
+            raise Exception("Error checking adjacency for {}, as it does not exist in graph.".format(label_x))
+        if label_y not in self.label_table:
+            raise Exception("Error checking adjacency for {}, as it does not exist in graph.".format(label_y))
+
+        index_x = self.label_table[label_x]
+        index_y = self.label_table[label_y]
+        if self.adj_matrix[index_x][index_y] != -1:
+            return True
+        else:
+            return False
+
+    def get_neighbors(self, label: str):
+        """
+        Return list of neighbors of node with given label
+
+        :param label:
+        :return: List
+        """
+        if label not in self.label_table:
+            raise Exception("Error searching for neighbors of {} as it does not exist in graph".format(label))
+        else:
+            index = self.label_table[label]
+            relations = self.adj_matrix[index]
+            # Unnecessary list comprehension for fun
+            return [self.label_table[relation_ind] for relation_ind in range(len(relations))
+                    if relations[relation_ind] is not -1]

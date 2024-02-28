@@ -1,19 +1,12 @@
 {
-  "node_1" : {
-      "val": 10,
-      "connections": {
-          "node_2": 2,
-          "node_3": 1
-      }
+  "labels" : {
+    "PA": 0,
+    "NJ": 1,
+    "OH": 2
   },
-  "node_2" : {
-      "val": 20,
-      "connections": {
-          "node_1": 4
-      }
-  },
-  "node_3" : {
-      "val": 15,
-      "connections": {}
-  }
+  "adj_matrix" : [
+    [-1, 4, 3],
+    [2, -1, -1],
+    [-1, -1, -1]
+  ]
 }
