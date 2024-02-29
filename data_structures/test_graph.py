@@ -80,6 +80,17 @@ class TestGraph(unittest.TestCase):
         path = self.graph.bfs('A', 'G', True)[1]
         self.assertEqual(path, ['G', 'C', 'B', 'A'])
 
+    def test_dfs(self):
+        self.graph.load_from_json(self.sample_graph_2_path)
+        path_exist = self.graph.dfs('A', 'B')[0]
+        self.assertTrue(path_exist)
+
+        path_exist = self.graph.dfs('A', 'G')[0]
+        self.assertTrue(path_exist)
+
+        path_exist = self.graph.dfs('A', 'E')[0]
+        self.assertFalse(path_exist)
+
 
 if __name__ == "__main__":
     unittest.main()

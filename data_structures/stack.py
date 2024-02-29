@@ -22,10 +22,17 @@ class Stack:
         else:
             return 'Top -> ' + str(self.top)
 
+    @property
+    def is_empty(self):
+        if self.top.head is None:
+            return True
+        else:
+            return False
+
     def push(self, value):
         """
         Add value to top of stack
-        :param value: int
+        :param value: Any
             Value to add on to stack
         :return: None
         """
@@ -35,7 +42,7 @@ class Stack:
     def peek(self):
         """
         Return value on top of stack
-        :return: int
+        :return: Any
         """
         if self.top.head is None:
             raise Exception("Stack is empty, can not peek")
@@ -45,7 +52,7 @@ class Stack:
     def pop(self):
         """
         Remove item from top of stack
-        :return: int
+        :return: Any
         """
         if self.top.head is None:
             raise Exception("Stack is empty, can not pop")

@@ -1,5 +1,6 @@
 import json
 from basic_queue import BasicQueue
+from stack import Stack
 from typing import Dict
 
 
@@ -149,6 +150,7 @@ class Graph:
 
         :param src: source node label
         :param dst: destination node label
+        :param return_path: bool, optional
         :return: Union[bool, List[str]]
         """
         if src not in self.label_table and dst not in self.label_table:
@@ -174,4 +176,40 @@ class Graph:
                     predecessor_map[neighbor] = curr
                     visited.append(neighbor)
                     neighbor_queue.enqueue(neighbor)
+        return [False]
+
+    def dfs(self, src: str, dst: str, return_path: bool = False):
+        """
+        Determine if a path exists between src and dst using depth first search.
+
+        Utilizing a stack, this method traverses as far along a path as possible before exploring original neighbors.
+        :param src: source node label
+        :param dst: destination node label
+        :param return_path: boolean to return the path taken or not
+        :return: List[bool, List[str]]
+        """
+        if src not in self.label_table and dst not in self.label_table:
+            raise Exception("Cannot compute dfs for src : {} and dst : {} as neither exist".format(src, dst))
+        if src not in self.label_table:
+            raise Exception("Cannot compute dfs with src : {} as it does not exist".format(src))
+        if dst not in self.label_table:
+            raise Exception("Cannot compute dfs with dst : {} as it does not exist".format(dst))
+
+        neighbor_stack = Stack()
+        predecessor_map = {}
+        visited = [src]
+        neighbor_stack.push(src)
+        while not neighbor_stack.is_empty:
+            curr = neighbor_stack.pop()
+            if curr == dst:
+                if return_path:
+                    return [True, self.get_path(src, dst, predecessor_map)]
+                else:
+                    return [True]
+            neighbors = self.get_neighbors(curr)
+            for neighbor in neighbors:
+                if neighbor not in visited:
+                    predecessor_map[neighbor] = curr
+                    visited.append(neighbor)
+                    neighbor_stack.push(neighbor)
         return [False]
