@@ -1,5 +1,6 @@
 from heap_type import HeapType
 from math import floor
+from typing import Any
 
 
 class Heap:
@@ -17,8 +18,8 @@ class Heap:
         Returns whether heap is empty or not
     kind: HeapType
         Indication of what kind of heap, max or min
-    _heap_arr: List[int]
-        List representation of heap
+    _heap_arr: List[Any]
+        List representation of heap.
 
     Methods
     -------
@@ -55,7 +56,7 @@ class Heap:
     def empty(self):
         self._heap_arr = []
 
-    def _satisfied(self, child_node: int, par_node: int) -> bool:
+    def _satisfied(self, child_node: Any, par_node: Any) -> bool:
         """
         Check if heap property is satisfied between two nodes given heap type, self.kind 
         :param child_node: int, child node
@@ -163,17 +164,17 @@ class Heap:
     def peek(self):
         """
         Return root of heap
-        :return: int, root
+        :return: Any, root
         """
         if self.is_empty:
             raise Exception("Heap is empty, can not peek")
         else:
             return self._heap_arr[0]
 
-    def push(self, node: int):
+    def push(self, node: Any):
         """
         Add node to heap. Utilizes _sift_up to satisfy heap property
-        :param node: int, new node
+        :param node: Any, new node
         :return: None
         """
         self._heap_arr.append(node)
@@ -184,7 +185,7 @@ class Heap:
         Remove root node and return it.
 
         Replaces root with most recently added node. Sift down with new root node.
-        :return: int, root node
+        :return: Any, root node
         """
         if self.is_empty:
             raise Exception("Can not pop, heap is empty")

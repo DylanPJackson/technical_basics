@@ -7,13 +7,14 @@ class TestGraph(unittest.TestCase):
         self.graph = Graph()
         self.sample_graph_1_path = "sample_graph_1.json"
         self.sample_graph_2_path = "sample_graph_2.json"
+        self.sample_graph_3_path = "sample_graph_3.json"
 
     @unittest.expectedFailure
     def test_load_from_json_bad_path(self):
         self.graph.load_from_json('loadmeeeee')
 
     def test_load_from_json(self):
-        self.graph.load_from_json(self.sample_graph_2_path)
+        self.graph.load_from_json(self.sample_graph_3_path)
         print(self.graph)
 
     @unittest.expectedFailure
@@ -91,6 +92,15 @@ class TestGraph(unittest.TestCase):
         path_exist = self.graph.dfs('A', 'E')[0]
         self.assertFalse(path_exist)
 
+    def test_dijkstras(self):
+        self.graph.load_from_json(self.sample_graph_3_path)
+        result = self.graph.dijkstras('A', 'E')
+        cost = result[0]
+        num_connections = result[1]
+        path = result[2]
+        self.assertEqual(cost, 4)
+        self.assertEqual(num_connections, 3)
+        self.assertEqual(path, ['E', 'C', 'B', 'A'])
 
 if __name__ == "__main__":
     unittest.main()
