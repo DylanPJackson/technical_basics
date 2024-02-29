@@ -1,4 +1,5 @@
 from simple_node import SimpleNode
+from typing import List, Any
 
 
 class BasicQueue:
@@ -31,20 +32,42 @@ class BasicQueue:
         else:
             return 'Head -> ' + str(self.front)
 
+    @property
+    def is_empty(self):
+        """
+        Return if queue is empty or not
+
+        :return: bool
+        """
+        if self.front.head is None:
+            return True
+        else:
+            return False
+
     def enqueue(self, val):
         """
         Add val to the end of the queue
-        :param val: int
+        :param val: Any
             Value to add to queue
         :return: None
         """
         self.tail.head = SimpleNode(val, head=None, root=False)
         self.tail = self.tail.head
 
+    def enqueue_list(self, items: List[Any]):
+        """
+        Enqueue all items in list
+
+        :param items:
+        :return: None
+        """
+        for item in items:
+            self.enqueue(item)
+
     def dequeue(self):
         """
         Remove and return the first item in the queue
-        :return: int, value of dequeued item
+        :return: Any, value of dequeued item
         """
         if self.front.head is None:
             raise Exception("Queue is empty, can not dequeue")
@@ -58,7 +81,7 @@ class BasicQueue:
     def peek(self):
         """
         Return the value of the first item in the queue
-        :return: int, value of first item
+        :return: Any, value of first item
         """
         if self.front.head is None:
             raise Exception("Queue is empty, can not peek")

@@ -1,4 +1,6 @@
 import json
+from basic_queue import BasicQueue
+from typing import Dict
 
 
 class Graph:
@@ -122,3 +124,54 @@ class Graph:
             # Unnecessary list comprehension for fun
             return [self.label_table[relation_ind] for relation_ind in range(len(relations))
                     if relations[relation_ind] is not -1]
+
+    def get_path(self, src: str, dst: str, predecessor_map: Dict[str, str]):
+        """
+        Given a predecessor map,
+        :param src: source node
+        :param dst: destination node
+        :param predecessor_map: mapping of nodes
+        :return: List
+        """
+        path = []
+        curr = dst
+        while curr != src:
+            path.append(curr)
+            curr = predecessor_map[curr]
+        path.append(src)
+        return path
+
+    def bfs(self, src: str, dst: str, return_path: bool = False):
+        """
+        Determine if a path exists between src node and dst node. Return path if required.
+
+        Using a queue to keep track of neighbors, this will explore all neighbors before traversing down a path.
+
+        :param src: source node label
+        :param dst: destination node label
+        :return: Union[bool, List[str]]
+        """
+        if src not in self.label_table and dst not in self.label_table:
+            raise Exception("Cannot compute bfs for src : {} and dst : {} as neither exist".format(src, dst))
+        if src not in self.label_table:
+            raise Exception("Cannot compute bfs with src : {} as it does not exist".format(src))
+        if dst not in self.label_table:
+            raise Exception("Cannot compute bfs with dst : {} as it does not exist".format(dst))
+
+        neighbor_queue = BasicQueue()
+        predecessor_map = {}
+        visited = [src]
+        neighbor_queue.enqueue(src)
+        while not neighbor_queue.is_empty:
+            curr = neighbor_queue.dequeue()
+            if curr == dst:
+                if return_path:
+                    return [True, self.get_path(src, dst, predecessor_map)]
+                else:
+                    return [True]
+            for neighbor in self.get_neighbors(curr):
+                if neighbor not in visited:
+                    predecessor_map[neighbor] = curr
+                    visited.append(neighbor)
+                    neighbor_queue.enqueue(neighbor)
+        return [False]

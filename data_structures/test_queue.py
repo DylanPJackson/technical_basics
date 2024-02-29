@@ -8,10 +8,23 @@ class TestQueue(unittest.TestCase):
         self.val_1 = 80
         self.val_2 = 234
         self.val_3 = 45
+        self.items = [self.val_1, self.val_2, self.val_3]
 
     def test_creation(self):
         str_check_1 = ''
         self.assertEqual(str_check_1, str(self.queue))
+
+    def test_is_empty(self):
+        empty = self.queue.is_empty
+        self.assertTrue(empty)
+
+        self.queue.enqueue(self.val_1)
+        empty = self.queue.is_empty
+        self.assertFalse(empty)
+
+        self.queue.dequeue()
+        empty = self.queue.is_empty
+        self.assertTrue(empty)
 
     def test_enqueue(self):
         self.queue.enqueue(self.val_1)
@@ -20,6 +33,11 @@ class TestQueue(unittest.TestCase):
         self.queue.enqueue(self.val_2)
         str_check_2 = 'Head -> {val_1} -> {val_2}'.format(val_1=self.val_1, val_2=self.val_2)
         self.assertEqual(str_check_2, str(self.queue))
+
+    def test_enqueue_list(self):
+        self.queue.enqueue_list(self.items)
+        str_check_1 = 'Head -> {} -> {} -> {}'.format(self.val_1, self.val_2, self.val_3)
+        self.assertEqual(str_check_1, str(self.queue))
 
     @unittest.expectedFailure
     def test_dequeue_empty(self):
