@@ -5,7 +5,7 @@ from linked_list import LinkedList
 class TestLinkedList(unittest.TestCase):
     def setUp(self):
         self.ll = LinkedList()
-        self.test_val_1 = 80
+        self.test_val_1 = 'dogs'
         self.test_val_2 = 234
         self.test_val_3 = 45
 

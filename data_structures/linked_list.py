@@ -11,7 +11,7 @@ class LinkedList:
 
     Attributes
     ----------
-    value : int
+    value : Any
         value of current node
     head : None, LinkedList
         Pointer to next node
@@ -24,7 +24,7 @@ class LinkedList:
     """
     def __init__(self, value=0, root=True):
         """
-        :param value: int, optional
+        :param value: Any, optional
             Value to use for node
         :param root: boolean, optional
             Indicator if root
@@ -38,12 +38,12 @@ class LinkedList:
             if self.root is True:
                 return ''
             else:
-                return '%d' % self.value
+                return "{}".format(self.value)
         else:
             if self.root is True:
                 return 'Head -> ' + str(self.head)
             else:
-                return ('%d -> ' % self.value) + str(self.head)
+                return ("{} -> ".format(self.value)) + str(self.head)
 
     @property
     def size(self):
@@ -56,7 +56,7 @@ class LinkedList:
         """
         Insert val at given index into Linked List
 
-        :param val: int, LinkedList
+        :param val: Any, LinkedList
             Value to be inserted
         :param ind: int, optional
             Index to insert value at
@@ -71,7 +71,7 @@ class LinkedList:
         Retrieve value at given index
         :param ind: int
             Index to retrieve value
-        :return: int
+        :return: Any
         """
         return self.traverse(ind, "access")
 
@@ -101,7 +101,7 @@ class LinkedList:
             Index to perform action
         :param action: str
             Action to be performed
-        :param val: int, LinkedList
+        :param val: Any, LinkedList
             value to be inserted
         :return: None, int
         """
